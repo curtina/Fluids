@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # defining initial values
-N = 10 # number of values in our initial array of x-values which we then manipulate
+N = 100 # number of values in our initial array of x-values which we then manipulate
 steps = 100 # number of iterations to perform
 
 # Setting initial conditions on dt, dx, u
@@ -43,6 +43,9 @@ axes[0].set_xlim(0,max(xgrid))
 axes[0].set_ylim(0,N)
 axes[1].set_xlim(0,max(xgrid))
 axes[1].set_ylim(0,N)
+axes[0].set_ylabel("f")
+axes[0].set_xlabel("Arbitrary Spatial coordinate")
+axes[1].set_xlabel("Arbitrary Spatial coordinate")
 fig.canvas.draw()
 plt.pause(3)
 

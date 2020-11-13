@@ -7,6 +7,7 @@ Outline:
 3. Iteratively calculate the u (velocity) and J (flux) for rho and rho*u at the cell interfaces
 4. Use u and J to progress rho and rho*u in time.
 5. Add the source term for rho*u of -dP/dx (P=pressure).
+6. Add reflective boundary conditions.
 
 author: Alice Curtin
 date: November 12, 2020
@@ -37,7 +38,7 @@ sigma = 3
 # amplitude = 0.05 is a small perturbation while amplitude = 0.3 results in a large perturbation
 amplitude = 0.3
 f1 = rho0 + amplitude*np.exp(-(xgrid-mu)**2/2/sigma**2)
-# setting initial velocity =0 and not perturbing it
+# setting initial velocity =0 and not perturbing it (need to comment out if we want to perturb u)
 u = np.zeros(N)
 f2 = f1*u
 # Below is code if we want to also perturb u
@@ -48,6 +49,8 @@ plt.ion()
 fig, axes = plt.subplots(1,1)
 axes.set_title("density")
 axes.plot(xgrid, f1, 'r')
+plt.ylabel("Magnitude density")
+plt.xlabel("Arbitrary Spatial coordinate")
 x1, = axes.plot(xgrid, f1, 'b')
 #axes.set_ylim(0.9,1.5)
 fig.canvas.draw()
@@ -81,7 +84,7 @@ while step_i < steps:
     # evolving f1
     f1 = f1 - dt/dx*(J1[1:]-J1[:-1])
     
-    # Apply BCs for f1
+    # Apply BCs for f1 (reflective)
     f1[0] = f1[0] - (dt / dx) * J1[0]
     f1[-1] = f1[-1] + (dt / dx) * J1[-2]
     
@@ -91,7 +94,7 @@ while step_i < steps:
     # Accounting for pressure
     f2[1:-1] = f2[1:-1] - dt/dx*cs2*(f1[2:]-f1[:-2])
     
-    # Apply BCs for f2
+    # Apply BCs for f2 (reflective)
     f2[0] = f2[0] - (dt / dx) * J2[0]
     f2[-1] = f2[-1] + (dt / dx) * J2[-2]
     
