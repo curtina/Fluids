@@ -1,8 +1,13 @@
 """
 1D Numerical Solution for Advection
 
+Outline:
+1. Define initial variables including number of grid points, number of iterations, time step, grid step, initial velocity
+2. Initiate two plots
+3. Iteratively update the f using the FTCS and Lax-Friedrich methods
+
 author: Alice Curtin
-date: November 5, 2020
+date: November 12, 2020
 """
 
 import numpy as np
@@ -12,9 +17,10 @@ import matplotlib.pyplot as plt
 N = 10 # number of values in our initial array of x-values which we then manipulate
 steps = 100 # number of iterations to perform
 
+# Setting initial conditions on dt, dx, u
+# Note that we need dx/dt > u for stability with the Lax-Friedrich method
 dt = 1 # time step
 dx = 0.3 # x step
-
 u = -0.1 #initial veloicty
 
 # setting up the initial x grid

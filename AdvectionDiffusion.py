@@ -1,8 +1,13 @@
 """
 1D Numerical Solution for the Advection-Diffusion Equation
 
+Outline:
+1. Define initial variables including number of grid points, number of iterations, time step, grid step, diffusion coefficients, matrices for solving the diffusion equation, initial velocity
+2. Initiate two plots
+3. Iteratively update the f using the FTCS and Lax-Friedrich methods
+
 author: Alice Curtin
-date: November 5, 2020
+date: November 12, 2020
 """
 
 import numpy as np
@@ -12,26 +17,29 @@ import matplotlib.pyplot as plt
 N = 5 # number of values in our initial array of x-values which we then manipulate
 steps = 100 # number of iterations to perform
 
-# defining all of our coefficients
+# Setting initial conditions on dt, dx, u
+# Note that we need dx/dt > u for stability with the Lax-Friedrich method
 dt = 1 # time step
 dx = 0.3 # x spacing
 u = -0.1 # initial velocity
 D1 = 1.0 # first diffusion coefficient
 D2 = 0.1 # second diffusion coefficient
 
-# Defining a matrix
-beta1 = D1*dt/(dx)**2 # defining a factor beta to be used in a matrix
+# Defining a matrix for solving the diffusion equation using the implicit method
+beta1 = D1*dt/(dx)**2 # defining a factor beta for the matrix
 A1 = np.eye(N) * (1.0 + 2.0*beta1) + np.eye(N, k=1)*-beta1 + np.eye(N, k=-1)*-beta1 # matrix for handling the diffusion term
-# no-slip BCs
+
+# Applying no-slip BCs
 A1[0][0] = 1 
 A1[0][1] = 0
 A1[-1][-1] = 1
 A1[-1][-2] = 0
 
-# Defining a second matrix
+# Defining a second matrix for the second diffusion coefficient
 beta2 = D2*dt/(dx)**2 # second beta
 A2 = np.eye(N) * (1.0 + 2.0*beta2) + np.eye(N, k=1)*-beta2 + np.eye(N, k=-1)*-beta2 # second matrix
-# no-slip BCs
+
+# Applying no-slip BCS
 A2[0][0] = 1 
 A2[0][1] = 0
 A2[-1][-1] = 1
@@ -66,11 +74,15 @@ step_i = 0
 # iterations of f1 and f2 based on advection AND diffusion
 while step_i < steps:
     step_i +=1 # updating each step
-    f1 = np.linalg.solve(A1, f1) # Solving for the diffusion result using our matrix A1
-    f1[1:N-1] = 1/2*(f1[2:] + f1[:N-2]) - u*dt/2/dx*(f1[2:] - f1[:N-2]) # Combining the diffusion result with our advection code presented in Advection.py
+    # Solving for diffusion result using our matrix A1
+    f1 = np.linalg.solve(A1, f1)
+    # Combining the diffusion result with our advection code presented in Advection.py
+    f1[1:N-1] = 1/2*(f1[2:] + f1[:N-2]) - u*dt/2/dx*(f1[2:] - f1[:N-2]) 
     # Different diffusion coefficient
-    f2 = np.linalg.solve(A2, f2) # # Solving for the diffusion result using our matrix A2
-    f2[1:N-1] = 1/2*(f2[2:] + f2[:N-2]) - u*dt/2/dx*(f2[2:] - f2[:N-2]) # Combining the diffusion result with our advection code presented in Advection.py
+    # Solving for the diffusion result using our matrix A2
+    f2 = np.linalg.solve(A2, f2) 
+    # Combining the diffusion result with our advection code presented in Advection.py
+    f2[1:N-1] = 1/2*(f2[2:] + f2[:N-2]) - u*dt/2/dx*(f2[2:] - f2[:N-2])
     # updating the plot
     x1.set_ydata(f1)
     x2.set_ydata(f2)
